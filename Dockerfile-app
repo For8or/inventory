@@ -1,0 +1,10 @@
+FROM python:3.8-alpine
+
+WORKDIR /app
+COPY source_code/ /app
+RUN apk update && apk add gcc musl-dev libffi-dev openssl-dev 
+
+RUN pip install -r requirements.txt
+
+RUN apk del --purge gcc musl-dev libffi-dev openssl-dev
+ENTRYPOINT ["python", "server.py"]

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% include 'head.html' %}
+</head>
+
+<body class="hold-transition skin-green layout-top-nav">
+  <div class="wrapper">
+    {% include 'header.html' %}
+
+    <div class="content-wrapper">
+      <div class="container">
+        <section class="content">
+          <div class="box box-info">
+            <div class="box-header with-border text-center">
+              <h3 class="box-title">Update Equipment</h3>
+            </div>
+            <form method="POST" action="/updateequipment">
+              {% for row in data %}
+              <div class="box-body">
+                <div class="form-group row">
+                  <label for="wia" class="col-sm-2 col-form-label">WIA Tag</label>
+                  <div class="col-sm-10">
+                    <input name="wia" value="{{ row[1] }}" id="wia" type="text" class="form-control" placeholder="WIA" autocomplete="off" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4">
+                    <label for="category" class="control-label fixed-width-label">Category</label>
+                    <select name="category" id="category" class="form-control">
+                      {% for option in category %}
+                      <option value="{{ option[1] }}" {% if option[1] == row[2] %}selected{% endif %}>{{ option[1] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="cost" class="control-label fixed-width-label">Cost</label>
+                    <input name="cost" value="{{ row[3] }}" id="cost" type="text" class="form-control" placeholder="Cost" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="aquired" class="control-label fixed-width-label">Acquired</label>
+                    <input name="aquired" value="{{ row[4] }}" id="aquired" type="text" class="form-control" placeholder="Acquired" autocomplete="off" >
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4">
+                    <label for="description_field" class="control-label fixed-width-label">Description</label>
+                    <input name="description_field" value="{{ row[5] }}" id="description_field" type="text" class="form-control" placeholder="Description" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="serial_field" class="control-label fixed-width-label">Serial</label>
+                    <input name="serial_field" value="{{ row[6] }}" id="serial_field" type="text" class="form-control" placeholder="Serial" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="owner_field" class="control-label fixed-width-label">Owner</label>
+                    <select name="owner_field" id="owner_field" class="form-control">
+                      {% for option in owner %}
+                      <option value="{{ option[1] }}" {% if option[1] == row[7] %}selected{% endif %}>{{ option[1] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4">
+                    <label for="use_field" class="control-label fixed-width-label">Use</label>
+                    <input name="use_field" value="{{ row[8] }}" id="use_field" type="text" class="form-control" placeholder="Use" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="location_field" class="control-label fixed-width-label">Location</label>
+                    <select name="location_field" id="location_field" class="form-control">
+                      {% for option in location %}
+                      <option value="{{ option[1] }}" {% if option[1] == row[9] %}selected{% endif %}>{{ option[1] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="condition_field" class="control-label fixed-width-label">Condition</label>
+                    <select name="condition_field" id="condition_field" class="form-control">
+                      {% for option in condition %}
+                      <option value="{{ option[1] }}" {% if option[1] == row[10] %}selected{% endif %}>{{ option[1] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4">
+                    <label for="inspection" class="control-label fixed-width-label">Inspection</label>
+                    <input name="inspection" value="{{ row[11] }}" id="inspection" type="text" class="form-control" placeholder="Inspection" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="disposition" class="control-label fixed-width-label">Disposition</label>
+                    <input name="disposition" value="{{ row[12] }}" id="disposition" type="text" class="form-control" placeholder="Disposition" autocomplete="off" >
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="notes" class="control-label fixed-width-label">Notes</label>
+                    <input name="notes" value="{{ row[13] }}" id="notes" type="text" class="form-control" placeholder="Notes" autocomplete="off" >
+                  </div>
+                </div>
+                <table class="table table-bordered table-striped">
+                  <thead align="center">
+                    <tr>
+                      <th>Grant</th>
+                      <th>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody id="formTableBody">
+                    {% for grant_row in funding %}
+                    <tr>
+                      <td>
+                        <select name="grant[]" class="form-control">
+                          {% for option in grant %}
+                          <option value="{{ option[1] }}" {% if option[1] == grant_row[1] %}selected{% endif %}>{{ option[1] }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td>
+                        <input name="grant[]" value="{{ grant_row[2] }}" type="text" class="form-control" placeholder="Percentage" autocomplete="off" >
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    <div class="form-group row">
+                      <div class="col-sm-4">
+                        <button type="button" class="btn btn-default" onclick="addRow()">Add Row</button>
+                      </div>
+                    </div>
+                  </tbody>
+                </table>
+                <div class="box-footer text-right">
+                  <a href="/"><button type="button" class="btn btn-default">Cancel</button></a>
+                  <input name="updateequipment" type="submit" class="btn btn-info pull-right" value="Update">
+                </div>
+              </div>
+              {% endfor %}
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/app.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js')}}"></script>
+
+    <script>
+      $(function () {
+        $("#dataequipment").DataTable();
+      });
+
+      function addRow() {
+        const tbody = document.getElementById('formTableBody');
+        const newRow = tbody.insertRow(-1);
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        let selectHTML = '<select name="grant[]" class="form-control">';
+        {% for option in grant %}
+            selectHTML += '<option value="{{ option[1] }}">{{ option[1] }}</option>';
+        {% endfor %}
+        selectHTML += '</select>';
+        cell1.innerHTML = selectHTML;
+        cell2.innerHTML = '<input name="grant[]" type="text" class="form-control" placeholder="Percentage" autocomplete="off">';
+    }
+    
+    </script>
+
+  </div>
+</body>
+</html>

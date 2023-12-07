@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  {%include 'head.html'%}
+
+  <body class="hold-transition skin-green layout-top-nav">
+    <div class="wrapper">
+      {% include 'header.html' %}
+  
+      <div class="content-wrapper">
+        <div class="container">
+          <section class="content">
+            <div class="box box-info">
+              <div class="box-header with-border text-center">
+                <h3 class="box-title">View Equipment</h3>
+              </div>
+              <form method="POST" action="/deleteequipment">
+                {% for row in data %}
+                <div class="box-body">
+                  <div class="form-group row">
+                    <label for="wia" class="col-sm-2 col-form-label">WIA Tag</label>
+                    <div class="col-sm-10">
+                      <input name="wia" value="{{ row[1] }}" id="wia" type="text" class="form-control" placeholder="WIA" autocomplete="off" disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-4">
+                      <label for="category" class="control-label fixed-width-label">Category</label>
+                      <input name="category" value="{{ row[2] }}" id="category" type="text" class="form-control" placeholder="Cost" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="cost" class="control-label fixed-width-label">Cost</label>
+                      <input name="cost" value="{{ row[3] }}" id="cost" type="text" class="form-control" placeholder="Cost" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="aquired" class="control-label fixed-width-label">Acquired</label>
+                      <input name="aquired" value="{{ row[4] }}" id="aquired" type="text" class="form-control" placeholder="Acquired" autocomplete="off" disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-4">
+                      <label for="description_field" class="control-label fixed-width-label">Description</label>
+                      <input name="description_field" value="{{ row[5] }}" id="description_field" type="text" class="form-control" placeholder="Description" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="serial_field" class="control-label fixed-width-label">Serial</label>
+                      <input name="serial_field" value="{{ row[6] }}" id="serial_field" type="text" class="form-control" placeholder="Serial" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="owner_field" class="control-label fixed-width-label">Owner</label>
+                      <input name="owner_field" value="{{ row[7] }}" id="owmer_field" type="text" class="form-control" placeholder="Owner" autocomplete="off" disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-4">
+                      <label for="use_field" class="control-label fixed-width-label">Use</label>
+                      <input name="use_field" value="{{ row[8] }}" id="use_field" type="text" class="form-control" placeholder="Use" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="location_field" class="control-label fixed-width-label">Location</label>
+                      <input name="location_field" value="{{ row[9] }}" id="location_field" type="text" class="form-control" placeholder="Use" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="condition_field" class="control-label fixed-width-label">Condition</label>
+                      <input name="condition_field" value="{{ row[10] }}" id="condition_field" type="text" class="form-control" placeholder="Use" autocomplete="off" disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-4">
+                      <label for="inspection" class="control-label fixed-width-label">Inspection</label>
+                      <input name="inspection" value="{{ row[11] }}" id="inspection" type="text" class="form-control" placeholder="Inspection" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="disposition" class="control-label fixed-width-label">Disposition</label>
+                      <input name="disposition" value="{{ row[12] }}" id="disposition" type="text" class="form-control" placeholder="Disposition" autocomplete="off" disabled>
+                    </div>
+                    <div class="col-sm-4">
+                      <label for="notes" class="control-label fixed-width-label">Notes</label>
+                      <input name="notes" value="{{ row[13] }}" id="notes" type="text" class="form-control" placeholder="Notes" autocomplete="off" disabled>
+                    </div>
+                  </div>
+                </div>
+                <table class="table table-bordered table-striped">
+                  <thead align="center">
+                    <tr>
+                      <th>Grant</th>
+                      <th>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody id="formTableBody">
+                    {% for i in range(0, length_funding, 1) %}
+                    <tr>
+                      <td>
+                        <input name="grant[]" value="{{ funding[i][1] }}"type="text" class="form-control" placeholder="Grant" autocomplete="off" disabled>
+                      </td>
+                      <td>
+                        <input name="percentage[]" value="{{ funding[i][2] }}"type="text" class="form-control" placeholder="Percentage" autocomplete="off" disabled>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                  </table>        
+                <div class="box-footer text-right">
+                  <a href="/"><button type="button" class="btn btn-default">Back</button></a>
+                </div>
+                {% endfor %}
+              </form>
+            </div>
+          </section>
+        </div>
+      </div>
+  
+      {% include 'footer.html' %}
+  
+    </div>
+  
+  
+    <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/app.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js')}}"></script>
+  
+    <script>
+      $(function () {
+        $("#dataequipment").DataTable();
+      });
+    </script>
+  
+  </body>
+</html>

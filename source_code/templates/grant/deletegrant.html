@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  {%include 'head.html'%}
+
+  <body class="hold-transition skin-green layout-top-nav">
+    <div class="wrapper">
+  
+      
+      {%include 'header.html'%}
+
+    <div class="content-wrapper">
+      <div class="container">  
+        <section class="content">
+          <div class="box box-info">
+            <div class="box-header with-border">
+            	<center>
+            		<h3 class="box-title">Delete Grant</h3>
+            	</center>
+            </div>
+
+            <form class="form-horizontal" method="POST" action="/deletegrant">
+            {% for row in data %}
+              <div class="box-body">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Name</label>
+                  <div class="col-sm-10">
+                    <input name="name" value="{{ row[1] }}" type="text" class="form-control" disabled>
+                  </div>
+                  <label class="col-sm-2 control-label">FAIN</label>
+                  <div class="col-sm-10">
+                    <input name="fain" value="{{ row[2] }}" type="text" class="form-control" disabled>
+                  </div>
+                  <label class="col-sm-2 control-label">Federal</label>
+                  <div class="col-sm-10">
+                    <label class="form-radio-label">Yes</label>
+                    <input name="federal" type="radio" id="yes" class="form-radio-input" value="Yes" {{ 'checked' if row[3]=='Yes' else ' '}} disabled>
+                    <label class="form-radio-label">No</label>
+                    <input name="federal" type="radio" id="no" class="form-radio-input" value="No" {{ 'checked' if row[3]=='No' else ' '}} disabled>
+                  </div>
+                </div>
+              <div class="box-footer">
+                <a href="/grant"><button type="button" class="btn btn-default">Cancel</button></a>
+                <input name="deletegrant" type="submit" class="btn btn-info pull-right" value="Delete">
+              </div>
+            {% endfor %}
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    {%include 'footer.html'%}
+  </div>
+  
+  <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/app.min.js')}}"></script>
+
+</body>
+</html>
