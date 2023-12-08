@@ -1,0 +1,39 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+    <h2>Profile Management</h2>
+    
+    <!-- Password Change Form -->
+    <form action="/profile" method="post">
+        <label for="new_password">New Password:</label>
+        <input type="password" id="new_password" name="new_password" required><br>
+        <input type="submit" value="Change Password">
+    </form>
+
+    <!-- Admin Section: Add User Form -->
+    {% if user.is_admin %}
+        <h3>Add New User</h3>
+        <form action="/add_user" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+
+            <label for="password">Temporary Password:</label>
+            <input type="password" id="password" name="password" required><br>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select><br>
+
+            <input type="submit" value="Add User">
+        </form>
+    {% endif %}
+</body>
+</html>

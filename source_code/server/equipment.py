@@ -3,13 +3,23 @@ from controller.database import Database
 import logging
 db = Database()
 equip = Blueprint('equip',__name__)
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('usr.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 @equip.route('/')
+@login_required
 def equipment():
     data,funding = db.read_equipment(None)
     logging.warning(data)
     return render_template('equipment/equipment.html', data = data)
 
 @equip.route('/addequipment/')
+@login_required
 def addequipment():
     category = db.read_category(None)
     owner = db.read_owner(None)
@@ -19,6 +29,7 @@ def addequipment():
     return render_template('equipment/addequipment.html', category = category, owner = owner, location = location, condition = condition, grant = grant)
  
 @equip.route('/addequipment/', methods = ['POST', 'GET'])
+@login_required
 def addequipmentpost():
     wia = request.form.get("wia")
     category = request.form.get("category")
@@ -46,6 +57,7 @@ def addequipmentpost():
         return redirect(url_for('equip.equipment'))
 
 @equip.route('/updateequipment/<int:id>/')
+@login_required
 def updateequipment(id):
     data,funding = db.read_equipment(id)
 
@@ -62,6 +74,7 @@ def updateequipment(id):
         return render_template('equipment/updateequipment.html', data=data, funding=funding, length_funding=length_funding,category = category, owner = owner, location = location, condition = condition, grant = grant)
 
 @equip.route('/updateequipment', methods = ['POST'])
+@login_required
 def updateequipmentpost():
     if request.method == 'POST' and request.form['updateequipment']:
         wia = request.form.get("wia")
@@ -106,6 +119,7 @@ def updateequipmentpost():
         return redirect(url_for('equip.equipment'))
 
 @equip.route('/viewequipment/<int:id>/')
+@login_required
 def viewequipment(id):
     data,funding = db.read_equipment(id)
     logging.warning(data)
@@ -117,6 +131,7 @@ def viewequipment(id):
     length_funding = len(funding)
     return render_template('equipment/viewequipment.html', data=data, funding=funding, length_funding=length_funding)
 @equip.route('/deleteequipment/<int:id>/')
+@login_required
 def deleteequipment(id):
     data,funding = db.read_equipment(id)
     logging.warning(data)
@@ -128,6 +143,7 @@ def deleteequipment(id):
     length_funding = len(funding)
     return render_template('equipment/deleteequipment.html', data=data, funding=funding, length_funding=length_funding)
 @equip.route('/deleteequipment', methods = ['POST'])
+@login_required
 def deleteequipmentpost():
     if request.method == 'POST' and request.form['deleteequipment']:
 

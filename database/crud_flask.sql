@@ -4,18 +4,6 @@
 -- --------------------------------------------------------
 
 --
--- Table structure for table phone_book
---
-
-CREATE TABLE IF NOT EXISTS phone_book (
-  id int NOT NULL AUTO_INCREMENT,
-  name varchar(255) NOT NULL,
-  phone varchar(50) NOT NULL,
-  address varchar(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-
---
 -- Table structure for table category
 --
 
@@ -98,5 +86,18 @@ CREATE TABLE IF NOT EXISTS funding_table (
   name varchar(255) NOT NULL,
   percentage varchar(255) NOT NULL,
   equipment_id int NOT NULL,
+  PRIMARY KEY(id)
+);
+
+--
+-- Table structure for table users
+--
+
+CREATE TABLE IF NOT EXISTS user_table (
+  id int NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(10) NOT NULL,
+  is_first_login BOOLEAN DEFAULT TRUE,
   PRIMARY KEY(id)
 );

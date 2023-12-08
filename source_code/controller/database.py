@@ -5,7 +5,8 @@ from controller.grant import Grant
 from controller.location import Location
 from controller.owner import Owner
 from controller.equipment import Equipment
-class Database(Category,Condition,Grant,Location,Owner,Equipment):
+from controller.user import User
+class Database(Category,Condition,Grant,Location,Owner,Equipment,User):
     def __init__(self):
         pass
     def connect(self):

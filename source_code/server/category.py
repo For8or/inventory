@@ -2,16 +2,27 @@ from flask import Flask, flash, render_template, redirect, url_for, request, ses
 from controller.database import Database
 db = Database()
 cat = Blueprint('cat',__name__)
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('usr.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 @cat.route('/category/')
+@login_required
 def category():
     data = db.read_category(None)
     return render_template('category/category.html', data = data)
 
 @cat.route('/addcategory/')
+@login_required
 def addcategory():
     return render_template('category/addcategory.html')
  
 @cat.route('/addcategory/', methods = ['POST', 'GET'])
+@login_required
 def addcategorypost():
     if request.method == 'POST' and request.form['save']:
         if db.insert_category(request.form):
@@ -24,6 +35,7 @@ def addcategorypost():
         return redirect(url_for('cat.category'))
 
 @cat.route('/updatecategory/<int:id>/')
+@login_required
 def updatecategory(id):
     data = db.read_category(id)
 
@@ -34,6 +46,7 @@ def updatecategory(id):
         return render_template('category/updatecategory.html', data = data)
 
 @cat.route('/updatecategory', methods = ['POST'])
+@login_required
 def updatecategorypost():
     if request.method == 'POST' and request.form['updatecategory']:
 
@@ -50,6 +63,7 @@ def updatecategorypost():
         return redirect(url_for('cat.category'))
 
 @cat.route('/deletecategory/<int:id>/')
+@login_required
 def deletecategory(id):
     data = db.read_category(id)
 
@@ -60,6 +74,7 @@ def deletecategory(id):
         return render_template('category/deletecategory.html', data = data)
 
 @cat.route('/deletecategory', methods = ['POST'])
+@login_required
 def deletecategorypost():
     if request.method == 'POST' and request.form['deletecategory']:
 

@@ -2,16 +2,27 @@ from flask import Flask, flash, render_template, redirect, url_for, request, ses
 from controller.database import Database
 db = Database()
 con = Blueprint('con',__name__)
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('usr.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 @con.route('/condition/')
+@login_required
 def condition():
     data = db.read_condition(None)
     return render_template('condition/condition.html', data = data)
 
 @con.route('/addcondition/')
+@login_required
 def addcondition():
     return render_template('condition/addcondition.html')
  
 @con.route('/addcondition/', methods = ['POST', 'GET'])
+@login_required
 def addconditionpost():
     if request.method == 'POST' and request.form['save']:
         if db.insert_condition(request.form):
@@ -24,6 +35,7 @@ def addconditionpost():
         return redirect(url_for('con.condition'))
 
 @con.route('/updatecondition/<int:id>/')
+@login_required
 def updatecondition(id):
     data = db.read_condition(id)
 
@@ -34,6 +46,7 @@ def updatecondition(id):
         return render_template('condition/updatecondition.html', data = data)
 
 @con.route('/updatecondition', methods = ['POST'])
+@login_required
 def updateconditionpost():
     if request.method == 'POST' and request.form['updatecondition']:
 
@@ -50,6 +63,7 @@ def updateconditionpost():
         return redirect(url_for('con.condition'))
 
 @con.route('/deletecondition/<int:id>/')
+@login_required
 def deletecondition(id):
     data = db.read_condition(id)
 
@@ -60,6 +74,7 @@ def deletecondition(id):
         return render_template('condition/deletecondition.html', data = data)
 
 @con.route('/deletecondition', methods = ['POST'])
+@login_required
 def deleteconditionpost():
     if request.method == 'POST' and request.form['deletecondition']:
 

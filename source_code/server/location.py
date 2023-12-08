@@ -2,6 +2,14 @@ from flask import Flask, flash, render_template, redirect, url_for, request, ses
 from controller.database import Database
 db = Database()
 loc = Blueprint('loc',__name__)
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('usr.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 @loc.route('/location/')
 def location():
     data = db.read_location(None)

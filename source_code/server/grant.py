@@ -3,16 +3,27 @@ from controller.database import Database
 import logging
 db = Database()
 gran = Blueprint('gran',__name__)
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('usr.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 @gran.route('/grant/')
+@login_required
 def grant():
     data = db.read_grant(None)
     return render_template('grant/grant.html', data = data)
 
 @gran.route('/addgrant/')
+@login_required
 def addgrant():
     return render_template('grant/addgrant.html')
  
 @gran.route('/addgrant/', methods = ['POST', 'GET'])
+@login_required
 def addgrantpost():
     if request.method == 'POST' and request.form['save']:
         logging.warning(request.form)
@@ -26,6 +37,7 @@ def addgrantpost():
         return redirect(url_for('gran.grant'))
 
 @gran.route('/updategrant/<int:id>/')
+@login_required
 def updategrant(id):
     data = db.read_grant(id)
 
@@ -36,6 +48,7 @@ def updategrant(id):
         return render_template('grant/updategrant.html', data = data)
 
 @gran.route('/updategrant', methods = ['POST'])
+@login_required
 def updategrantpost():
     if request.method == 'POST' and request.form['updategrant']:
 
@@ -52,6 +65,7 @@ def updategrantpost():
         return redirect(url_for('gran.grant'))
 
 @gran.route('/deletegrant/<int:id>/')
+@login_required
 def deletegrant(id):
     data = db.read_grant(id)
 
@@ -62,6 +76,7 @@ def deletegrant(id):
         return render_template('grant/deletegrant.html', data = data)
 
 @gran.route('/deletegrant', methods = ['POST'])
+@login_required
 def deletegrantpost():
     if request.method == 'POST' and request.form['deletegrant']:
 
