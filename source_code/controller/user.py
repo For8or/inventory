@@ -57,7 +57,7 @@ class User():
 
         try:
             cursor.execute("UPDATE user_table set password_hash = %s where id = %s",
-                           (data[1], id,))
+                           (data, id,))
             con.commit()
 
             return True
@@ -74,7 +74,7 @@ class User():
 
         try:
             cursor.execute("UPDATE user_table set is_first_login = %s where id = %s",
-                           (data[1], id,))
+                           (data, id,))
             con.commit()
 
             return True

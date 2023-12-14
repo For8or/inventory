@@ -66,7 +66,7 @@ def login():
             session['user_id'] = authenticated_user.id
             if authenticated_user.is_first_login:
                 return redirect(url_for('usr.changepassword'))
-            return redirect(url_for('index'))
+            return redirect(url_for('equip.equipment'))
         else:
             flash('Invalid username or password')
 
@@ -87,8 +87,9 @@ def changepassword():
             user.set_password(new_password)
             db.update_user_password(user_id, user.password_hash)
             user.first_login_completed()
+            db.update_user_first_login(user_id, 0)
             flash('Password successfully changed.')
-            return redirect(url_for('usr.profile'))
+            return redirect(url_for('equip.equipment'))
 
     return render_template('user/changepassword.html')
 
@@ -106,16 +107,21 @@ def profile():
 
     return render_template('user/profile.html', user=user)
 
-@usr.route('/add_user', methods=['POST'])
+@usr.route('/adduser', methods=['GET', 'POST'])
 @login_required
-def add_user():
-    if not db.read_user_id(session['user_id']).is_admin():
-        flash('Only admins can add new users.')
-        return redirect(url_for('usr.profile'))
+def adduser():
+    
+    user_id = session['user_id']
+    user = db.read_user_id(user_id)
+    if request.method == 'POST' and user and isinstance(user, User):
+        if not db.read_user_id(session['user_id']).is_admin():
+            flash('Only admins can add new users.')
+            return redirect(url_for('usr.profile'))
 
-    username = request.form['username']
-    temporary_password = request.form['password']
-    role = request.form['role']
-    User.add_new_user(username, temporary_password, role)
-    flash('New user added successfully.')
-    return redirect(url_for('usr.profile'))
+        username = request.form['username']
+        temporary_password = request.form['password']
+        role = request.form['role']
+        User.add_new_user(username, temporary_password, role)
+        flash('New user added successfully.')
+        return redirect(url_for('usr.profile'))
+    return render_template('user/adduser.html')

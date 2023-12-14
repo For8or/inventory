@@ -1,39 +1,129 @@
 <!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Profile</title>
-    <!-- Add your CSS links here -->
-</head>
-<body>
-    <h2>Profile Management</h2>
-    
-    <!-- Password Change Form -->
-    <form action="/profile" method="post">
-        <label for="new_password">New Password:</label>
-        <input type="password" id="new_password" name="new_password" required><br>
-        <input type="submit" value="Change Password">
-    </form>
 
-    <!-- Admin Section: Add User Form -->
-    {% if user.is_admin %}
-        <h3>Add New User</h3>
-        <form action="/add_user" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br>
+{%include 'head.html'%}
 
-            <label for="password">Temporary Password:</label>
-            <input type="password" id="password" name="password" required><br>
+<body class="hold-transition skin-green layout-top-nav">
+    <div class="wrapper">
+  
+      
+      <header class="main-header">
+            <nav class="navbar navbar-static-top">
+              <div class="container">
+                <div class="navbar-header">
+                  <a href="/" class="navbar-brand"><b>Inventory</b>Website</a>
+                </div>
+              </div>
+            </nav>
+        </header>
 
-            <label for="role">Role:</label>
-            <select id="role" name="role">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select><br>
+    <div class="content-wrapper">
+        <section class="content-header">
+            {% for message in get_flashed_messages()%}
+          <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              {{ message }}
+          </div>
+            {% endfor%}
+        </section>
+      <div class="container">
+        <div class="content-wrapper">
+            <div class="container">  
+              <section class="content">
+                <div class="box box-info">
+                  <div class="box-header with-border">
+                        <center>
+                            <h3 class="box-title">Change Password</h3>
+                      </center>
+                  </div>
+      
+                  <form class="form-horizontal" method="POST" action="/changepassword">
+                    <div class="box-body">
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label">New Password:</label>
+      
+                        <div class="col-sm-10">
+                          <input name="new_password" type="text" class="form-control" placeholder="New Password" autocomplete="off" required>
+                        </div>
+                      </div>
+      
+                    <div class="box-footer">
+                      <input name="/changepassword" type="submit" class="btn btn-info pull-right" value="Update">
+                    </div>
+                  </form>
+                </div>
+              </section>
+            </div>
+          </div>
 
-            <input type="submit" value="Add User">
-        </form>
-    {% endif %}
+          {% if user.is_admin %}
+        <section class="content">
+          <div class="box box-primary">
+            <center><b>Users</b></center>
+            {%include 'routes.html'%}
+            <div class="box-body">
+              <table id="datacategory" class="table table-bordered table-striped">
+                <thead align="center">
+                  <tr>
+                    <th >Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                
+                <tbody>
+                    {% if data|length == 0 %}
+                  <tr>
+                    <td>No Data</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                    {% else %}
+                  <tr>
+                      {% for row in data %}
+                    <td>{{ row[1] }}</td>
+                    <td align="center">
+                      <a href="/updatecategory/{{ row[0]}}">
+                        <button type="button" class="btn btn-sm btn-warning btn-flat" title="Update"><span class="glyphicon glyphicon-pencil"></span></button>
+                      </a>
+                      <a href="/deletecategory/{{ row[0]}}">
+                        <button type="button" class="btn btn-sm btn-danger btn-flat" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
+                      </a>
+                    </td>
+                  </tr>
+                      {% endfor %}
+                    {% endif%}   
+                </tbody>
+              </table>
+              <a href="/addcategory">
+                <button type="button" class="btn btn-primary btn-flat">
+                  <span class="glyphicon glyphicon-plus"></span>Add User
+                </button>
+              </a>
+            </div>
+          </div>
+        </section>
+        {% endif %}
+      </div>
+    </div>
+
+    {%include 'footer.html'%}
+  </div>
+  
+
+  <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/app.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js')}}"></script>
+
+  <script>
+    $(function () {
+      $("#datacategory").DataTable();
+      
+    });
+  </script>
+
 </body>
 </html>

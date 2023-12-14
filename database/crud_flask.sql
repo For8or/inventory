@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS condition_table (
 CREATE TABLE IF NOT EXISTS grant_table (
   id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
-  fain varchar(255) NOT NULL,
+  fain varchar(255),
   federal varchar(255) NOT NULL,
   PRIMARY KEY(id)
 );

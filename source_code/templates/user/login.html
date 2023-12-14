@@ -1,21 +1,72 @@
 <!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <!-- Add your CSS links here -->
-</head>
-<body>
-    <h2>Login</h2>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
+{%include 'head.html'%}
+<body class="hold-transition skin-green layout-top-nav">
+    <div class="wrapper">
+      
+        <header class="main-header">
+            <nav class="navbar navbar-static-top">
+              <div class="container">
+                <div class="navbar-header">
+                  <a href="/" class="navbar-brand"><b>Inventory</b>Website</a>
+                </div>
+              </div>
+            </nav>
+        </header>
 
-        <input type="submit" value="Login">
-    </form>
+    <div class="content-wrapper">
+        <section class="content-header">
+            {% for message in get_flashed_messages()%}
+          <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              {{ message }}
+          </div>
+            {% endfor%}
+        </section>
+      <div class="container">  
+        <section class="content">
+          <div class="box box-info">
+            <div class="box-header with-border">
+            	<center>
+            		<h3 class="box-title">Login</h3>
+            	</center>
+            </div>
+
+            <form class="form-horizontal" method="POST" action="/login">
+              <div class="box-body">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Username</label>
+
+                  <div class="col-sm-10">
+                    <input name="username" type="text" class="form-control" required>
+                  </div>
+                  <label class="col-sm-2 control-label">Password</label>
+
+                  <div class="col-sm-10">
+                    <input name="password" type="text" class="form-control" required>
+                  </div>
+                </div>
+
+              <div class="box-footer">
+                <input name="/login" type="submit" class="btn btn-info pull-right" value="Login">
+              </div>
+
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+
+
+    {%include 'footer.html'%}
+  </div>
+  
+
+  <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/app.min.js')}}"></script>
+
 </body>
 </html>
