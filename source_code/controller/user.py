@@ -1,4 +1,5 @@
 import pymysql
+import logging
 
 class User():
     def __init__(self):
@@ -8,7 +9,7 @@ class User():
         cursor = con.cursor()
 
         try:
-            if id == None:
+            if name == None:
                 cursor.execute("SELECT * FROM user_table order by name asc")
             else:
                 cursor.execute(
@@ -35,21 +36,24 @@ class User():
         finally:
             con.close()             
     def insert_user(self, data):
-        con =  pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')
+        con = pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')
         cursor = con.cursor()
+        logging.info("Inserting user data: %s", data)
+
 
         try:
-            cursor.execute("INSERT INTO user_table(name) VALUES(%s)",
-                           (data['name'],))
+            # Correct the SQL INSERT statement
+            cursor.execute("INSERT INTO user_table (name, password_hash, role, is_first_login) VALUES (%s, %s, %s, %s)",
+                        (data['username'], data['password_hash'], data['role'], data['is_first_login']))
             con.commit()
-
             return True
-        except:
+        except Exception as e:
+            logging.error("Database Insert Error: %s", e)
             con.rollback()
-
             return False
         finally:
             con.close()
+
 
     def update_user_password(self, id, data):
         con =  pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')

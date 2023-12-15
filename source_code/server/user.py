@@ -3,6 +3,7 @@ from flask import Flask, flash, render_template, redirect, url_for, request, ses
 from controller.database import Database
 from functools import wraps
 import logging
+
 db = Database()
 usr = Blueprint('usr', __name__)
 
@@ -29,6 +30,7 @@ class User:
         return check_password_hash(self.password_hash, password)
 
     def is_admin(self):
+        logging.warning("User self data: %s", self)
         return self.role == 'admin'
 
     def first_login_completed(self):
@@ -38,9 +40,10 @@ class User:
     @staticmethod
     def authenticate(username, password):
         user_data = db.read_user(username)
-        logging.warning("User: %s",user_data)
+        logging.warning("User data: %s", user_data)
         if user_data and isinstance(user_data, tuple):
-            user = User(*user_data[0])
+            user_details = user_data[0]  # Extract the inner tuple
+            user = User(*user_details)
             if user and user.check_password(password):
                 return user
         return None
@@ -51,9 +54,18 @@ class User:
             raise ValueError("Invalid role specified")
 
         password_hash = generate_password_hash(password)
-        new_user = User(None, username, password_hash, role, True)
-        db.insert_user(new_user)
-        return new_user
+        
+        # Build the data dictionary
+        user_data = {
+            'username': username,
+            'password_hash': password_hash,
+            'role': role,
+            'is_first_login': True
+        }
+
+        # Pass the data dictionary to the insert_user method
+        db.insert_user(user_data)
+        return user_data
 
 @usr.route('/login', methods=['GET', 'POST'])
 def login():
@@ -75,19 +87,18 @@ def login():
 @usr.route('/changepassword', methods=['GET', 'POST'])
 @login_required
 def changepassword():
-    
     user_id = session['user_id']
     user_data = db.read_user_id(user_id)
 
     if user_data and isinstance(user_data, tuple):
-        user = User(*user_data[0])
+        user_details = user_data[0]  # Extract the inner tuple
+        user = User(*user_details)
 
         if request.method == 'POST':
             new_password = request.form['new_password']
             user.set_password(new_password)
             db.update_user_password(user_id, user.password_hash)
             user.first_login_completed()
-            db.update_user_first_login(user_id, 0)
             flash('Password successfully changed.')
             return redirect(url_for('equip.equipment'))
 
@@ -97,31 +108,68 @@ def changepassword():
 @login_required
 def profile():
     user_id = session['user_id']
-    user = db.read_user_id(user_id)
+    user_data = db.read_user_id(user_id)
+    user_list = db.read_user(None)
 
-    if request.method == 'POST' and user and isinstance(user, User):
-        new_password = request.form['new_password']
-        user.set_password(new_password)
-        db.update_user_password(user_id, user.password_hash)
-        flash('Password successfully updated.')
+    if user_data and isinstance(user_data, tuple):
+        user_details = user_data[0]
+        user = User(*user_details)
 
-    return render_template('user/profile.html', user=user)
+        if request.method == 'POST':
+            new_password = request.form['new_password']
+            user.set_password(new_password)
+            db.update_user_password(user_id, user.password_hash)
+            flash('Password successfully updated.')
+
+    return render_template('user/profile.html', user=user_details, data=user_list)
 
 @usr.route('/adduser', methods=['GET', 'POST'])
 @login_required
 def adduser():
-    
     user_id = session['user_id']
-    user = db.read_user_id(user_id)
-    if request.method == 'POST' and user and isinstance(user, User):
-        if not db.read_user_id(session['user_id']).is_admin():
-            flash('Only admins can add new users.')
-            return redirect(url_for('usr.profile'))
+    user_data = db.read_user_id(user_id)
 
-        username = request.form['username']
-        temporary_password = request.form['password']
-        role = request.form['role']
-        User.add_new_user(username, temporary_password, role)
-        flash('New user added successfully.')
-        return redirect(url_for('usr.profile'))
+    if user_data and isinstance(user_data, tuple):
+        user_details = user_data[0]
+        user = User(*user_details)
+
+        if request.method == 'POST':
+            if user.is_admin():
+                username = request.form['username']
+                temporary_password = request.form['password']
+                role = request.form['role']
+                User.add_new_user(username, temporary_password, role)
+                flash('New user added successfully.')
+                return redirect(url_for('usr.profile'))
+            else:
+                flash('Only admins can add new users.')
+
     return render_template('user/adduser.html')
+
+@usr.route('/deleteuser/<int:id>/')
+@login_required
+def deleteuser(id):
+    data = db.read_user_id(id)
+
+    if len(data) == 0:
+        return redirect(url_for('usr.profile'))
+    else:
+        session['deleteuser'] = id
+        return render_template('user/deleteuser.html', data = data)
+
+@usr.route('/deleteuser', methods = ['POST'])
+@login_required
+def deleteuserpost():
+    if request.method == 'POST' and request.form['deleteuser']:
+
+        if db.delete_user(session['deleteuser']):
+            flash('A user has been deleted')
+
+        else:
+            flash('A user can not be deleted')
+
+        session.pop('deleteuser', None)
+
+        return redirect(url_for('usr.profile'))
+    else:
+        return redirect(url_for('usr.profile'))

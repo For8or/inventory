@@ -54,14 +54,11 @@
                   </form>
                 </div>
               </section>
-            </div>
-          </div>
 
-          {% if user.is_admin %}
+          {% if user[3]=='admin' %}
         <section class="content">
           <div class="box box-primary">
             <center><b>Users</b></center>
-            {%include 'routes.html'%}
             <div class="box-body">
               <table id="datacategory" class="table table-bordered table-striped">
                 <thead align="center">
@@ -84,10 +81,7 @@
                       {% for row in data %}
                     <td>{{ row[1] }}</td>
                     <td align="center">
-                      <a href="/updatecategory/{{ row[0]}}">
-                        <button type="button" class="btn btn-sm btn-warning btn-flat" title="Update"><span class="glyphicon glyphicon-pencil"></span></button>
-                      </a>
-                      <a href="/deletecategory/{{ row[0]}}">
+                      <a href="/deleteuser/{{ row[0]}}">
                         <button type="button" class="btn btn-sm btn-danger btn-flat" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
                       </a>
                     </td>
@@ -96,7 +90,7 @@
                     {% endif%}   
                 </tbody>
               </table>
-              <a href="/addcategory">
+              <a href="/adduser">
                 <button type="button" class="btn btn-primary btn-flat">
                   <span class="glyphicon glyphicon-plus"></span>Add User
                 </button>
@@ -104,7 +98,16 @@
             </div>
           </div>
         </section>
+        {% else %}
+        <section class="content">
+          <div class="box box-primary">
+            <center><b>User management is available only for administrators</b></center>
+          </div>
+        </section>
         {% endif %}
+        
+      </div>
+      </div>
       </div>
     </div>
 

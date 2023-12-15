@@ -1,4 +1,4 @@
-<!-- register.html -->
+<!-- adduser.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,20 +27,32 @@
 	            </center>
             </div>
             <form action="/adduser" method="post">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required><br>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Username:</label>
+                <div class="col-sm-10">
+                <input type="text" id="username" name="username" class="form-control" required><br>
+              </div>
+            </div>
         
-                <label for="password">Temporary Password:</label>
-                <input type="password" id="password" name="password" required><br>
+                <div class="form-group">
+                <label class="col-sm-2 control-label">Temporary Password:</label>
+                <div class="col-sm-10">
+                <input type="password" id="password" name="password" class="form-control" required><br>
+              </div>
+            </div>
         
-                <label for="role">Role:</label>
-                <select id="role" name="role">
+                <div class="form-group">
+                <label class="col-sm-2 control-label">Role:</label>
+                <div class="col-sm-10">
+                <select id="role" name="role" class="form-control">
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                 </select><br>
+              </div>
+            </div>
               <div class="box-footer">
                 <a href="/profile"><button type="button" class="btn btn-default">Cancel</button></a>
-                <input name="/adduser" type="submit" class="btn btn-info pull-right" value="Update">
+                <input name="/adduser" type="submit" class="btn btn-info pull-right" value="Create">
               </div>
             </form>
           </div>
