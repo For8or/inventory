@@ -173,3 +173,9 @@ def deleteuserpost():
         return redirect(url_for('usr.profile'))
     else:
         return redirect(url_for('usr.profile'))
+@usr.route('/logout')
+def logout():
+    # Clear the session
+    session.clear()
+    flash('You have been logged out.')
+    return redirect(url_for('usr.login'))
