@@ -27,16 +27,16 @@ class Equipment():
         finally:
             con.close()
                   
-    def insert_equipment(self,wia,category,cost,aquired,description_field,serial_field,owner_field,use_field,location_field,condition_field,inspection,disposition,grant_data,notes):
+    def insert_equipment(self,wia,category,cost,aquired,description_field,serial_field,owner_field,use_field,location_field,condition_field,inspection,disposition,grant, percent,notes):
         con =  pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')
         cursor = con.cursor()
         try:
             cursor.execute("INSERT INTO equipment_table(wia,category,cost,aquired,description_field,serial_field,owner_field,use_field,location_field,condition_field,inspection,disposition,notes) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                            (wia,category,cost,aquired,description_field,serial_field,owner_field,use_field,location_field,condition_field,inspection,disposition,notes))
             con.commit()
-            for i in range(0, len(grant_data),2):
-                    cursor.execute("INSERT INTO funding_table (name, percentage, equipment_id) VALUES (%s, %s, %s)", (grant_data[i], grant_data[i+1], wia))
-                    con.commit()
+            for i in range(0, len(grant), 1):
+                cursor.execute("INSERT INTO funding_table (name, percentage, equipment_id) VALUES (%s, %s, %s)", (grant[i], percent[i], wia))
+                con.commit()
             return True
         except Exception as e:
             logging.error(f"Error: {e}")
@@ -46,7 +46,7 @@ class Equipment():
         finally:
             con.close()
 
-    def update_equipment(self, wia, category, cost, aquired, description_field, serial_field, owner_field, use_field, location_field, condition_field, inspection, disposition, grant_data, notes, id):
+    def update_equipment(self, wia, category, cost, aquired, description_field, serial_field, owner_field, use_field, location_field, condition_field, inspection, disposition, grant, percent, notes, id):
         con = pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')
         cursor = con.cursor()
         try:
@@ -61,8 +61,8 @@ class Equipment():
             con.commit()
 
             # Then, insert new/updated funding entries
-            for i in range(0, len(grant_data), 2):
-                cursor.execute("INSERT INTO funding_table (name, percentage, equipment_id) VALUES (%s, %s, %s)", (grant_data[i], grant_data[i+1], wia))
+            for i in range(0, len(grant), 1):
+                cursor.execute("INSERT INTO funding_table (name, percentage, equipment_id) VALUES (%s, %s, %s)", (grant[i], percent[i], wia))
                 con.commit()
 
             return True
@@ -88,3 +88,26 @@ class Equipment():
             return False
         finally:
             con.close()
+            
+    def get_equipment_data_with_funding(self):
+        con = pymysql.connect(host="mysql", user="dev", password="dev", database="crud_flask", charset='utf8')
+        cursor = con.cursor()
+        try:
+            cursor.execute("""
+                SELECT e.id, e.wia, e.category, e.cost, e.aquired, e.description_field, 
+                    e.serial_field, e.owner_field, e.use_field, e.location_field, 
+                    e.condition_field, e.inspection, e.disposition, e.notes, 
+                    GROUP_CONCAT(f.fain) as funding
+                FROM equipment_table e
+                LEFT JOIN funding_table f ON e.id = f.equipment_id
+                GROUP BY e.id
+                ORDER BY e.wia ASC
+            """)
+            return cursor.fetchall()
+        except Exception as e:
+            logging.error(f"Error: {e}")
+            return ()
+        finally:
+            con.close()
+
+        

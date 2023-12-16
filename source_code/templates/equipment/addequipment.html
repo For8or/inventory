@@ -114,7 +114,7 @@
                       </select>
                     </td>
                     <td>
-                      <input name="grant[]" type="text" class="form-control" placeholder="Percentage" autocomplete="off">
+                      <input name="percent[]" type="text" class="form-control" placeholder="Percentage" autocomplete="off">
                     </td>
                   </tr>
                 </tbody>
@@ -150,14 +150,25 @@
       $("#dataequipment").DataTable();
     });
 
-      function addRow() {
-        const tbody = document.getElementById('formTableBody');
-        const newRow = tbody.insertRow(-1);
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        cell1.innerHTML = '<select name="grant[]" class="form-control">{% for option in grant %}<option value="{{ option[1] }}">{{ option[1] }}</option>{% endfor %}</select>';
-        cell2.innerHTML = '<input name="percentage[]" type="text" class="form-control" placeholder="Percentage" autocomplete="off">';
-      }
+    function addRow() {
+      const tbody = document.getElementById('formTableBody');
+      const newRowHtml = `
+          <tr>
+              <td>
+                  <select name="grant[]" class="form-control">
+                      {% for option in grant %}
+                          <option value="{{ option[1] }}">{{ option[1] }}</option>
+                      {% endfor %}
+                  </select>
+              </td>
+              <td>
+                  <input name="percent[]" type="text" class="form-control" placeholder="Percentage" autocomplete="off">
+              </td>
+          </tr>
+      `;
+      tbody.insertAdjacentHTML('beforeend', newRowHtml);
+  }
+  
     
   </script>
 

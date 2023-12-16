@@ -1,5 +1,7 @@
-from flask import Flask, flash, render_template, redirect, url_for, request, session, Blueprint
+from flask import Flask, flash, render_template, redirect, url_for, request, session, Blueprint, Response
 from controller.database import Database
+from io import StringIO
+import csv
 import logging
 db = Database()
 equip = Blueprint('equip',__name__)
@@ -43,11 +45,18 @@ def addequipmentpost():
     condition_field = request.form.get("condition_field")
     inspection = request.form.get("inspection")
     disposition = request.form.get("disposition")
-    grant_data = request.form.getlist("grant[]")
+    grant = request.form.getlist("grant[]")
     notes = request.form.get("notes")
     save = request.form.get("save")
+    percent = request.form.get("percent[]")
+        
+        
+    percentages = request.form.getlist('percent[]')
+
+    # Debugging: Print or log the percentages
+    print("Percentages: %s", percentages)
     if request.method == 'POST' and save:
-        if db.insert_equipment(wia,category,cost,aquired,description_field,serial_field,owner_field,use_field,location_field,condition_field,inspection,disposition,grant_data,notes):
+        if db.insert_equipment(wia=wia,category=category,cost=cost,aquired=aquired,description_field=description_field,serial_field=serial_field,owner_field=owner_field,use_field=use_field,location_field=location_field,condition_field=condition_field,inspection=inspection,disposition=disposition,grant=grant,percent=percent,notes=notes):
             flash("A new equipment has been added")
         else:
             flash("A new equipment can not be added")
@@ -89,24 +98,18 @@ def updateequipmentpost():
         condition_field = request.form.get("condition_field")
         inspection = request.form.get("inspection")
         disposition = request.form.get("disposition")
-        grant_data = request.form.getlist("grant[]")
+        grant = request.form.getlist("grant[]")
         notes = request.form.get("notes")
-        logging.warning("wia = %s", wia)
-        logging.warning("category = %s", category)
-        logging.warning("cost = %s", cost)
-        logging.warning("aquired = %s", aquired)
-        logging.warning("description_field = %s", description_field)
-        logging.warning("serial_field = %s", serial_field)
-        logging.warning("owner_field = %s", owner_field)
-        logging.warning("use_field = %s", use_field)
-        logging.warning("location_field = %s", location_field)
-        logging.warning("condition_field = %s", condition_field)
-        logging.warning("inspection = %s", inspection)
-        logging.warning("disposition = %s", disposition)
-        logging.warning("grant_data = %s", grant_data)
-        logging.warning("notes = %s", notes)
-        logging.warning("id = %s", session['updateequipment'])
-        if db.update_equipment(wia = wia,category = category,cost = cost,aquired = aquired,description_field = description_field,serial_field = serial_field,owner_field = owner_field,use_field = use_field,location_field = location_field,condition_field = condition_field,inspection = inspection,disposition = disposition,grant_data = grant_data,notes = notes, id =  session['updateequipment']):
+        percent = request.form.get("percent[]")
+        
+        
+        percentages = request.form.getlist('percent[]')
+
+        # Debugging: Print or log the percentages
+        print("Percentages: ", percentages)
+        
+        
+        if db.update_equipment(wia = wia,category = category,cost = cost,aquired = aquired,description_field = description_field,serial_field = serial_field,owner_field = owner_field,use_field = use_field,location_field = location_field,condition_field = condition_field,inspection = inspection,disposition = disposition,grant = grant,percent=percent,notes = notes, id =  session['updateequipment']):
             flash('A equipment has been updated')
 
         else:
@@ -158,3 +161,32 @@ def deleteequipmentpost():
         return redirect(url_for('equip.equipment'))
     else:
         return redirect(url_for('equip.equipment'))
+
+@equip.route('/download-equipment-csv')
+@login_required
+def download_equipment_csv():
+    # Assuming db.get_equipment_data_with_funding() returns a list of equipment items
+    # Each item should be a dictionary or object with the fields mentioned in the headers
+    equipment_data = db.get_equipment_data_with_funding()
+
+    def generate():
+        data = StringIO()
+        writer = csv.writer(data)
+
+        # Write the headers as specified
+        writer.writerow(['ID', 'WIA', 'Category', 'Cost', 'Aquired', 'Description', 'Serial', 'Owner', 'Use', 'Location', 'Condition', 'Inspection', 'Disposition', 'Notes' , 'Funding'])
+
+        # Write the equipment data
+        for item in equipment_data:
+            writer.writerow([
+                item.id, item.wia, item.category, item.cost, item.aquired, item.description, 
+                item.serial, item.owner, item.use, item.location, item.condition, item.inspection, 
+                item.disposition, item.notes, item.funding  
+            ])
+
+        data.seek(0)
+        yield data.read()
+
+    response = Response(generate(), mimetype='text/csv')
+    response.headers.set('Content-Disposition', 'attachment', filename='equipment.csv')
+    return response

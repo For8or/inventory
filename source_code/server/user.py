@@ -110,9 +110,9 @@ def profile():
     user_id = session['user_id']
     user_data = db.read_user_id(user_id)
     user_list = db.read_user(None)
+    user_details = user_data[0]
 
     if user_data and isinstance(user_data, tuple):
-        user_details = user_data[0]
         user = User(*user_details)
 
         if request.method == 'POST':
