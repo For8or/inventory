@@ -94,16 +94,20 @@ class Equipment():
         cursor = con.cursor()
         try:
             cursor.execute("""
-                SELECT e.id, e.wia, e.category, e.cost, e.aquired, e.description_field, 
+                SELECT 
+                    e.id, e.wia, e.category, e.cost, e.aquired, e.description_field, 
                     e.serial_field, e.owner_field, e.use_field, e.location_field, 
                     e.condition_field, e.inspection, e.disposition, e.notes, 
-                    GROUP_CONCAT(f.fain) as funding
+                    GROUP_CONCAT(CONCAT(f.name, ': ', f.percentage, '% (FAIN: ', g.fain, ')')) AS funding
                 FROM equipment_table e
-                LEFT JOIN funding_table f ON e.id = f.equipment_id
+                LEFT JOIN funding_table f ON e.wia = f.equipment_id
+                LEFT JOIN grant_table g ON f.name = g.name
                 GROUP BY e.id
-                ORDER BY e.wia ASC
+                ORDER BY e.wia ASC;
             """)
-            return cursor.fetchall()
+            results = cursor.fetchall()
+            logging.warning("Query Results:", results)  # Debugging line
+            return results
         except Exception as e:
             logging.error(f"Error: {e}")
             return ()

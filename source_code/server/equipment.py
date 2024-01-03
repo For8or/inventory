@@ -48,13 +48,10 @@ def addequipmentpost():
     grant = request.form.getlist("grant[]")
     notes = request.form.get("notes")
     save = request.form.get("save")
-    percent = request.form.get("percent[]")
-        
-        
-    percentages = request.form.getlist('percent[]')
+    percent = request.form.getlist("percent[]")
 
     # Debugging: Print or log the percentages
-    print("Percentages: %s", percentages)
+    logging.warning("Percentages: %s", percent)
     if request.method == 'POST' and save:
         if db.insert_equipment(wia=wia,category=category,cost=cost,aquired=aquired,description_field=description_field,serial_field=serial_field,owner_field=owner_field,use_field=use_field,location_field=location_field,condition_field=condition_field,inspection=inspection,disposition=disposition,grant=grant,percent=percent,notes=notes):
             flash("A new equipment has been added")
@@ -100,13 +97,10 @@ def updateequipmentpost():
         disposition = request.form.get("disposition")
         grant = request.form.getlist("grant[]")
         notes = request.form.get("notes")
-        percent = request.form.get("percent[]")
-        
-        
-        percentages = request.form.getlist('percent[]')
+        percent = request.form.getlist("percent[]")
 
         # Debugging: Print or log the percentages
-        print("Percentages: ", percentages)
+        logging.warning("Percentages: %s", percent)
         
         
         if db.update_equipment(wia = wia,category = category,cost = cost,aquired = aquired,description_field = description_field,serial_field = serial_field,owner_field = owner_field,use_field = use_field,location_field = location_field,condition_field = condition_field,inspection = inspection,disposition = disposition,grant = grant,percent=percent,notes = notes, id =  session['updateequipment']):
@@ -167,26 +161,38 @@ def deleteequipmentpost():
 def download_equipment_csv():
     # Assuming db.get_equipment_data_with_funding() returns a list of equipment items
     # Each item should be a dictionary or object with the fields mentioned in the headers
-    equipment_data = db.get_equipment_data_with_funding()
-
     def generate():
         data = StringIO()
         writer = csv.writer(data)
 
-        # Write the headers as specified
-        writer.writerow(['ID', 'WIA', 'Category', 'Cost', 'Aquired', 'Description', 'Serial', 'Owner', 'Use', 'Location', 'Condition', 'Inspection', 'Disposition', 'Notes' , 'Funding'])
+        # Write the headers
+        writer.writerow(['ID', 'WIA', 'Category', 'Cost', 'Acquired', 'Description', 'Serial', 'Owner', 'Use', 'Location', 'Condition', 'Inspection', 'Disposition', 'Notes', 'Funding Names'])
 
-        # Write the equipment data
+        # Fetch the equipment data
+        equipment_data = db.get_equipment_data_with_funding()
+
+        # Iterate over each equipment item and write it to the CSV
         for item in equipment_data:
             writer.writerow([
-                item.id, item.wia, item.category, item.cost, item.aquired, item.description, 
-                item.serial, item.owner, item.use, item.location, item.condition, item.inspection, 
-                item.disposition, item.notes, item.funding  
+                item[0],  # ID
+                item[1],  # WIA
+                item[2],  # Category
+                item[3],  # Cost
+                item[4],  # Acquired
+                item[5],  # Description
+                item[6],  # Serial
+                item[7],  # Owner
+                item[8],  # Use
+                item[9],  # Location
+                item[10], # Condition
+                item[11], # Inspection
+                item[12], # Disposition
+                item[13], # Notes
+                item[14]  # Funding Names
             ])
 
         data.seek(0)
         yield data.read()
-
     response = Response(generate(), mimetype='text/csv')
     response.headers.set('Content-Disposition', 'attachment', filename='equipment.csv')
     return response

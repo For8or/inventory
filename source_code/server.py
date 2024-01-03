@@ -28,5 +28,4 @@ def page_not_found(error):
 if __name__ == '__main__':
     app.run(debug=True, port=8001, host="0.0.0.0")
     #Add print list option(csv)(ROUTE IS MISSING)
-    #Fix the grant view!!!!!!!!!!!!!!!!!!!!!!!!!
     
